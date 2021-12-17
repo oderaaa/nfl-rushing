@@ -64,7 +64,7 @@ Run npm install to install all dependencies
 
 Run npm start to run app in the development mode
 
-T
+
 To run the server
 
 cd server 
@@ -72,4 +72,8 @@ cd server
 Run npm install to install all dependencies
 
 Run npm run dev to run server in the development mode 
+
+Todo:
+Add debouncer to name search
+Fix yds sort bug
 
