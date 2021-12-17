@@ -9,6 +9,7 @@ import './App.css';
 
 const App = () => {
   const { data, loading, error } = useGetRushingList();
+  console.log(data);
   return (
       <div className="App">
         {loading && <Loading/>}

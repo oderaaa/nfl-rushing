@@ -15,7 +15,7 @@ const useGetRushingList = () => {
                     throw new Error(`${ERROR_STRING.STATUS_RESPONSE} ${res.status}`);  
                 }
                 const data = await res.json();
-                setData(data);
+                setData(addQueryField(data));
                 setLoading(false);
             }catch (err){
                 setError(err.message);
@@ -30,6 +30,11 @@ const useGetRushingList = () => {
         data
     }    
 }
+
+function addQueryField(data){
+    data.query = "?s=&f=&p=&l=";
+    return data;    
+} 
 
 export { useGetRushingList }
 

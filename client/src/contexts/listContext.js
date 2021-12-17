@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 
-export const ListContext = createContext({});
+export const ListContext = createContext();
 
 export const ListProvider = (props) => {
 

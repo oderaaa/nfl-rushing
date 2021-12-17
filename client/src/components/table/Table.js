@@ -1,42 +1,55 @@
 import { useContext, useMemo } from "react";
-import { useTable, useSortBy, useFilters, usePagination } from "react-table";
+import { useTable } from "react-table";
+import ErrorDisplay from "../errorDisplay/ErrorDisplay.js";
+import Loading from "../loading/Loading.js";
 import { ListContext } from '../../contexts/listContext';
-import { ColumnFilter } from "./ColumnFilter";
 import { CSVLink } from "react-csv";
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useToggle, useFilter } from '../../hooks/inputHooks';
+import { useGoToNextPage, useGoToPrevPage } from '../../hooks/tableHooks';
+
 import './tableStyle.css'
 
 export const Table = ({ col }) => {
-  const [list] = useContext(ListContext);  
-  const data = useMemo(() => list, []);  
+  const [list, setList] = useContext(ListContext);   
+  const data = list.response.results; 
   const columns = useMemo(() => col, []);
-  const defaultColumn = useMemo(() => ({ Filter: ColumnFilter }), []);
-
-  const { 
-    getTableProps, getTableBodyProps, headerGroups, page,
-    nextPage, previousPage, canNextPage, canPreviousPage,
-    pageOptions, state, gotoPage, pageCount, prepareRow,
-    setPageSize, rows } = useTable({ columns, data, defaultColumn }, useFilters, useSortBy, usePagination);
-    
-  const { pageIndex, pageSize } = state;
+  const {toggleValue, setToggleValue} = useToggle();
+  const  goToNextPage  = useGoToNextPage();
+  const goToPrevPage = useGoToPrevPage();
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable({ columns, data});   
   const rowData = rows.map(element => element.original);
+  const nameFilter = useFilter();
+  
 
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
+    {/*loading && <Loading/>}
+    {error && <ErrorDisplay />*/}
+    {<input onChange={(e) => nameFilter(e.target.value)} />}
+    {<ToggleButtonGroup
+      color="primary"
+      value={toggleValue}
+      exclusive
+      onChange={(e, value)=>setToggleValue(value)}
+      aria-label="text alignment"
+    >
+    <ToggleButton value="Lng">Sort by Lng</ToggleButton>
+    <ToggleButton value="Yds">Sort by Yds</ToggleButton>
+    <ToggleButton value="TD">Sort by TD</ToggleButton>
+    </ToggleButtonGroup>}
+    <table {...getTableProps()}>
+      <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps)}>{column.render("Header")}
-                  <div>{column.canFilter ? column.render('Filter') : null}</div>
-                  <span>{column.isSorted ? (column.isSortedDesc ? String.fromCharCode('0x25BC') :  String.fromCharCode('0x25B2') ): ''}</span>
-                </th>
+                <th {...column.getHeaderProps()}>{column.render("Header")} </th>
               ))}
             </tr>
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {rows.map((row) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -48,27 +61,10 @@ export const Table = ({ col }) => {
           })}
         </tbody>
       </table>
-      <div>
-        <span>Page{' '}<strong>{pageIndex + 1} of {pageOptions.length}</strong> {' '} </span>
-        <span>| Go to page: {' '} <input type='number' defaultValue={pageIndex + 1} onChange={e => {
-          const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
-          gotoPage(pageNumber)
-        }} /> </span>
-        <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}>
-          {
-            [10, 25, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                No of rows {pageSize}
-              </option>
-
-            ))
-
-          }  </select>
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}> {'<<'} </button>
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
-        <button onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}> {'>>'} </button>
-        <CSVLink data={rowData}>Export as CSV</CSVLink>
+      <div>        
+        <button onClick={goToPrevPage}>Previous </button>
+        <CSVLink data={rowData}>Export as CSV</CSVLink>       
+        <button onClick={goToNextPage}> Next </button>
       </div>
     </>
   );

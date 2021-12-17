@@ -57,9 +57,19 @@ If you have any questions regarding requirements, do not hesitate to email your 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+To run the client
 cd client
 
 Run npm install to install all dependencies
 
 Run npm start to run app in the development mode
+
+T
+To run the server
+
+cd server 
+
+Run npm install to install all dependencies
+
+Run npm run dev to run server in the development mode 
 
