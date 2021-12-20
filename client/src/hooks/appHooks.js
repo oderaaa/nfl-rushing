@@ -32,7 +32,7 @@ const useGetRushingList = () => {
 }
 
 function addQueryField(data){
-    data.query = "?s=&f=&p=&l=";
+    data.query = "?s=&f=&p=&l=20";
     return data;    
 } 
 
